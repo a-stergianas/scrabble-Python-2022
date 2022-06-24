@@ -4,6 +4,13 @@ import os
 global dictionary
 dictionary = open("greek7.txt", encoding="utf8").read().splitlines()
 
+def gameOption():
+    print("--------------------")
+    name = input("Γράψε το όνομά σου: ")
+    player = Human(name)
+    pc = Computer("PC")
+    game = Game(player, pc)
+
 print("***** SCRABBLE *****")
 print("--------------------")
 print("1: Σκορ")
@@ -30,13 +37,10 @@ match x:
     case '2':
         print("Ρυθμίσεις")
     case '3':
-        print("Παιχνίδι")
+        gameOption()
     case 'q':
         quit()
 
-newGame = Game()
-newPlayer = Human("Achill")
-print(newPlayer.__repr__())
 
 def binary_search(low, high, word):
     if high >= low:
