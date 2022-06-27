@@ -1,14 +1,12 @@
 from classes import *
 import os
 
-global dictionary
-dictionary = open("greek7.txt", encoding="utf8").read().splitlines()
 
 def gameOption():
     print("--------------------")
     name = input("Γράψε το όνομά σου: ")
     player = Human(name)
-    pc = Computer("PC")
+    pc = Computer("Η/Υ")
     game = Game(player, pc)
 
 print("***** SCRABBLE *****")

@@ -48,24 +48,32 @@ class Player:
     def __repr__(self):
         repr(", ".join(letter for letter in self.lettersInHand))
 
+    def printLettersInHand(self):
+        stringToReturn = ""
+
+        for letter in self.lettersInHand:
+            stringToReturn += letter + "[" + str(letters[letter][1]) + "], "
+        return stringToReturn[:-2]
+
 class Human(Player):
     def play(self):
-        print("player plays")
-
+        return input("ΛΕΞΗ: ")
 
 class Computer(Player):
     def play(self):
-        return
+        print("Edo tha paizei to pc")
 
 
 class Game:
     def __init__(self, player: Human, pc: Computer):
         self.player = player
         self.pc = pc
+        self.keepPlaying = True
+        self.dictionary = open("greek7.txt", encoding="utf8").read().splitlines()
+
         self.setup()
 
     def __repr__(self):
-        print("Στο σακουλάκι " + + "")
         return repr("This is the game")
 
     def setup(self):
@@ -79,19 +87,95 @@ class Game:
             self.player.lettersInHand.append(letter)
 
         for letter in self.sak.getletters(7):
-            self.pc.lettersInHand.append(self.sak.getletters(7))
+            self.pc.lettersInHand.append(letter)
 
         self.run()
 
     def run(self):
-        # while True:
+        while True:
             self.round += 1
             print("--------------------")
+            print("Γύρος:         " + str(self.round))
+            print("Σκορ:          " + str(self.playerPoints) + "-" + str(self.pcPoints))
+            print("Στο σακουλάκι: " + str(self.sak.itemCount) + " γράμματα\n")
+
             if self.round % 2 == 1:
-                print("Στο σακουλάκι: " + str(self.sak.itemCount) + " γράμματα - Παίζεις:")
-                print("Γράμματα: ", ", ".join(self.player.lettersInHand))
+                print("Σειρά του " + self.player.name)
+                print("Γράμματα: " + self.player.printLettersInHand())
+                playedWord = self.player.play()
+
+                while (playedWord == "q" and len(self.player.lettersInHand) <= self.sak.itemCount) or (
+                        playedWord == "p" and len(self.player.lettersInHand) > self.sak.itemCount) or self.checkWord(
+                        playedWord) == False:
+                    print("--------------------")
+                    if playedWord == "q":
+                        print("Δεν μπορείτε να σταματήσετε το παιχνίδι όσο μπορείτε να πάτε πάσο.")
+                    elif playedWord == "p":
+                        print("Δεν υπάρχουν αρκετά γράμματα στο σακουλάκι για να πάτε πάσο. Μπορείτε όμως να σταματήσετε.")
+                    else:
+                        print("ΜΗ ΑΠΟΔΕΚΤΗ ΛΕΞΗ. Προσπάθησε ξανα.")
+                    print("Γράμματα: " + self.player.printLettersInHand())
+                    playedWord = self.player.play()
+
+                if playedWord == "q":
+                    print("Ο " + self.player.name + " δεν μπορεί να συνεχίσει.")
+                    self.end()
+                elif playedWord == "p":
+                    print("Ο " + self.player.name + " πήγε πάσο. Τα γράμματά του αλλάχθηκαν.")
+                    self.sak.putbackletters(self.player.lettersInHand)
+                    self.player.lettersInHand = []
+                    for letter in self.sak.getletters(7):
+                        self.player.lettersInHand.append(letter)
+                else:
+                    points = self.countPoints(playedWord)
+                    print("AΠΟΔΕΚΤΗ ΛΕΞΗ! Πήρατε " + str(points) + " πόντους.")
+                    self.playerPoints += points
+                    self.removeLetters(playedWord)
+                    for letter in self.sak.getletters(len(playedWord)):
+                        self.player.lettersInHand.append(letter)
+
             else:
+                print("Σειρά του " + self.pc.name)
+                print("Γράμματα: " + self.pc.printLettersInHand())
                 self.pc.play()
 
+    def checkWord(self, word):
+        if word == "p" or word == "q":
+            return True
+
+        testLettersInHand = str("".join(letter for letter in self.player.lettersInHand))
+        count = 0
+        for i in range(len(word)):
+            flag = True
+            for y in range(len(testLettersInHand)):
+                if word[i] == testLettersInHand[y] and flag == True:
+                    flag = False
+                    testLettersInHand = testLettersInHand[:y] + "-" + testLettersInHand[(y+1):]
+                    count += 1
+
+        if count != len(word):
+            return False
+
+        if word not in self.dictionary:
+            return False
+
+        return True
+
+    def countPoints(self, word):
+        points = 0
+        for letter in word:
+            for i in letters:
+                if letter == i:
+                    points += letters[i][1]
+                    break
+        return points
+
+    def removeLetters(self, word):
+        for i in word:
+            for y in self.player.lettersInHand:
+                if i == y:
+                    self.player.lettersInHand.remove(y)
+
+
     def end(self):
-        return
+        print("telos paixnidioy")
