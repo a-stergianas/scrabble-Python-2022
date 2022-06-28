@@ -8,6 +8,9 @@ def gameOption():
     player = Human(name)
     pc = Computer("Η/Υ")
     game = Game(player, pc)
+    game.setup()
+    game.run()
+
 
 print("***** SCRABBLE *****")
 print("--------------------")
