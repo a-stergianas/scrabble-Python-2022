@@ -1,3 +1,4 @@
+import json
 from random import shuffle
 
 letters = { 'Α': [12, 1], 'Β': [1, 8], 'Γ': [2, 4],  'Δ': [2, 4],  'Ε': [8, 1],
@@ -182,6 +183,7 @@ class Game:
         self.keepPlaying = True
         self.round = 0
         self.sak = SakClass()
+        self.winner = ""
 
         global dictionary
         if "dictionary" not in globals():
@@ -207,15 +209,15 @@ class Game:
 
             # σειρά του παίκτη
             if self.round % 2 == 1:
-                print("Σειρά του " + self.player.name)
+                print("Σειρά του/της " + self.player.name)
                 print("Γράμματα: " + self.player.printLettersInHand())
                 playedWord = self.player.play(self.sak)
 
                 if playedWord == "q":
-                    print("Ο " + self.player.name + " δεν μπορεί να συνεχίσει.")
+                    print("Ο/Η " + self.player.name + " δεν μπορεί να συνεχίσει.")
                     self.end()
                 elif playedWord == "p":
-                    print("Ο " + self.player.name + " πήγε πάσο. Τα γράμματά του αλλάχθηκαν.")
+                    print("Ο/Η " + self.player.name + " πήγε πάσο. Τα γράμματά του αλλάχθηκαν.")
                     self.sak.putbackletters(self.player.lettersInHand)
                     self.player.lettersInHand = []
                     for letter in self.sak.getletters(7):
@@ -251,7 +253,7 @@ class Game:
                         self.pc.lettersInHand.append(letter)
                 else:
                     points = self.countpoints(playedWord)
-                    print("AΠΟΔΕΚΤΗ ΛΕΞΗ! Πήρατε " + str(points) + " πόντους.")
+                    print("AΠΟΔΕΚΤΗ ΛΕΞΗ! Ο " + self.pc.name + " πήρε " + str(points) + " πόντους.")
                     self.pc.score += points
                     for i in range(len(playedWord)):
                         self.pc.lettersInHand.remove(playedWord[i])
@@ -275,8 +277,11 @@ class Game:
         print("--------------------")
         print("ΤΕΛΟΣ ΠΑΙΧΝΙΔΙΟΥ!")
         if self.player.score > self.pc.score:
-            print("Νικητής ο " + self.player.name + " με σκορ " + str(self.player.score) + "-" + str(self.pc.score))
+            self.winner = self.player.name
+            print("Νικητής ο/η " + self.player.name + " με σκορ " + str(self.player.score) + "-" + str(self.pc.score))
         elif self.player.score < self.pc.score:
-            print("Νικητής ο " + self.pc.name + " με σκορ " + str(self.player.score) + "-" + str(self.pc.score))
+            self.winner = self.pc.name
+            print("Νικητής ο/η " + self.pc.name + " με σκορ " + str(self.player.score) + "-" + str(self.pc.score))
         else:
+            self.winner = ""
             print("Το παιχνίδι έληξε ισόπαλο " + str(self.player.score) + "-" + str(self.pc.score))

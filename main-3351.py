@@ -1,4 +1,6 @@
 from classes import *
+import json
+
 pc = Computer("Η/Υ")
 
 def main():
@@ -24,7 +26,7 @@ def main():
 
     match x:
         case '1':
-            print("Σκορ")
+            showScores()
         case '2':
             settings()
         case '3':
@@ -32,6 +34,51 @@ def main():
         case 'q':
             print("\nΕυχαριστούμε που έπαιξες!")
             quit()
+
+
+def write_score(name):
+    if name not in scores:
+        scores[name] = 1
+    else:
+        scores[name] += 1
+    with open("scores.txt", 'w') as f:
+        json.dump(scores, f)
+
+
+def read_scores():
+    try:
+        with open("scores.txt", 'r') as f:
+            scores = json.load(f)
+        return scores
+    except IOError:
+        # if file does not exist - we have no scores
+        return {}
+
+def showScores():
+    print("--------------------")
+    print("******* ΣΚΟΡ *******")
+    scoresToPrint = read_scores()
+    for name, score in scoresToPrint.items():
+        print(name + ": " + str(score) + " νίκες")
+    print("--------------------")
+    print("1: Επιστροφή στο αρχικό μενού")
+    print("q: Έξοδος")
+    x = input("Επιλογή: ")
+
+    while x != '1' and x != 'q':
+        print("--------------------")
+        print("1: Επιστροφή στο αρχικό μενού")
+        print("q: Έξοδος")
+        x = input("ΛΑΘΟΣ! Επέλεξε ξανά: ")
+
+    match x:
+        case '1':
+            print("\n\n\n\n\n")
+            main()
+        case 'q':
+            print("\nΕυχαριστούμε που έπαιξες!")
+            quit()
+
 
 def settings():
     print("--------------------")
@@ -60,6 +107,8 @@ def gameOption():
     game = Game(player, pc)
     game.setup()
     game.run()
+    if game.winner == game.player.name:
+        write_score(game.winner)
 
     print("--------------------")
     print("1: Επιστροφή στο αρχικό μενού")
@@ -80,4 +129,6 @@ def gameOption():
             print("\nΕυχαριστούμε που έπαιξες!")
             quit()
 
+
+scores = read_scores()
 main()
