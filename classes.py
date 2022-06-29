@@ -1,4 +1,3 @@
-import json
 from random import shuffle
 
 letters = { 'Α': [12, 1], 'Β': [1, 8], 'Γ': [2, 4],  'Δ': [2, 4],  'Ε': [8, 1],
@@ -65,7 +64,7 @@ class Human(Player):
 
         while (playedWord == "q" and len(self.lettersInHand) <= sak.itemCount) or (
                 playedWord == "p" and len(self.lettersInHand) > sak.itemCount) or self.checkword(
-            playedWord) == False:
+            playedWord) is False:
             print("--------------------")
             if playedWord == "q":
                 print("Δεν μπορείτε να σταματήσετε το παιχνίδι όσο μπορείτε να πάτε πάσο.")
@@ -87,7 +86,7 @@ class Human(Player):
         for i in range(len(word)):
             flag = True
             for y in range(len(testLettersInHand)):
-                if word[i] == testLettersInHand[y] and flag == True:
+                if word[i] == testLettersInHand[y] and flag is True:
                     flag = False
                     testLettersInHand = testLettersInHand[:y] + "-" + testLettersInHand[(y+1):]
                     count += 1
