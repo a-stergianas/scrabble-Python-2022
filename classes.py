@@ -46,7 +46,7 @@ class Player:
         self.name = name
         self.score = 0
         self.lettersInHand = []
-        self.algorithm = "Smart"
+        self.algorithm = "3"
 
     def __repr__(self):
         repr(", ".join(letter for letter in self.lettersInHand))
@@ -99,6 +99,7 @@ class Human(Player):
 
         return True
 
+
 class Computer(Player):
     def play(self, lettersInHand, lettersInBag):
         word = self.searchword(lettersInHand)
@@ -111,18 +112,23 @@ class Computer(Player):
             return word
 
     def searchword(self, lettersInHand):
-        if self.algorithm == "MIN Letters":
+        # MIN Letters
+        if self.algorithm == "1":
             for i in range(2, len(lettersInHand)):
                 for y in self.permutations(lettersInHand, i):
-                    if y in dictionary:
-                        return y
+                    wordToCheck = "".join(p for p in y)
+                    if wordToCheck in dictionary:
+                        return wordToCheck
             return "nothing"
-        elif self.algorithm == "MAX Letters":
+        # MAX Letters
+        elif self.algorithm == "2":
             for i in range(len(lettersInHand), 2, -1):
                 for y in self.permutations(lettersInHand, i):
-                    if y in dictionary:
-                        return y
+                    wordToCheck = "".join(p for p in y)
+                    if wordToCheck in dictionary:
+                        return wordToCheck
             return "nothing"
+        # SMART
         else:
             highest = 0
             wordToReturn = "nothing"
@@ -144,7 +150,6 @@ class Computer(Player):
                     points += letters[i][1]
                     break
         return points
-
 
     def permutations(self, iterable, r):
         # permutations('ABCD', 2) --> AB AC AD BA BC BD CA CB CD DA DB DC
@@ -176,8 +181,6 @@ class Game:
         self.pc = pc
         self.keepPlaying = True
         self.round = 0
-        self.playerPoints = 0
-        self.pcPoints = 0
         self.sak = SakClass()
 
         global dictionary
@@ -194,13 +197,12 @@ class Game:
         for letter in self.sak.getletters(7):
             self.pc.lettersInHand.append(letter)
 
-
     def run(self):
         while self.keepPlaying:
             self.round += 1
             print("--------------------")
             print("Γύρος:         " + str(self.round))
-            print("Σκορ:          " + str(self.playerPoints) + "-" + str(self.pcPoints))
+            print("Σκορ:          " + str(self.player.score) + "-" + str(self.pc.score))
             print("Στο σακουλάκι: " + str(self.sak.itemCount) + " γράμματα\n")
 
             # σειρά του παίκτη
@@ -221,7 +223,7 @@ class Game:
                 else:
                     points = self.countpoints(playedWord)
                     print("AΠΟΔΕΚΤΗ ΛΕΞΗ! Πήρατε " + str(points) + " πόντους.")
-                    self.playerPoints += points
+                    self.player.score += points
                     for i in range(len(playedWord)):
                         self.player.lettersInHand.remove(playedWord[i])
                     for letter in self.sak.getletters(len(playedWord)):
@@ -250,7 +252,7 @@ class Game:
                 else:
                     points = self.countpoints(playedWord)
                     print("AΠΟΔΕΚΤΗ ΛΕΞΗ! Πήρατε " + str(points) + " πόντους.")
-                    self.pcPoints += points
+                    self.pc.score += points
                     for i in range(len(playedWord)):
                         self.pc.lettersInHand.remove(playedWord[i])
                     for letter in self.sak.getletters(len(playedWord)):
@@ -268,7 +270,13 @@ class Game:
                     break
         return points
 
-
     def end(self):
         self.keepPlaying = False
-        print("telos paixnidioy")
+        print("--------------------")
+        print("ΤΕΛΟΣ ΠΑΙΧΝΙΔΙΟΥ!")
+        if self.player.score > self.pc.score:
+            print("Νικητής ο " + self.player.name + " με σκορ " + str(self.player.score) + "-" + str(self.pc.score))
+        elif self.player.score < self.pc.score:
+            print("Νικητής ο " + self.pc.name + " με σκορ " + str(self.player.score) + "-" + str(self.pc.score))
+        else:
+            print("Το παιχνίδι έληξε ισόπαλο " + str(self.player.score) + "-" + str(self.pc.score))
