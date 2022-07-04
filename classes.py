@@ -284,3 +284,5 @@ class Game:
         else:
             self.winner = ""
             print("Το παιχνίδι έληξε ισόπαλο " + str(self.player.score) + "-" + str(self.pc.score))
+        self.player.score = 0
+        self.pc.score = 0
